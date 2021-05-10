@@ -2,29 +2,16 @@ name: Prepare
 
 on:
   pull_request:
-    types: [synchronize, opened, reopened, labeled]
+    types: [synchronize, opened, reopened]
 
 defaults:
   run:
     shell: bash
 
 jobs:
-  label:
-    name: Label
-    env:
-      READY_FOR_REVIEW: ${{ contains(github.event.pull_request.labels.*.name, 'ready-for-review') }}
-    runs-on: ubuntu-latest
-    steps:
-      - if: ${{ env.READY_FOR_REVIEW == 'false' }}
-        uses: ouzi-dev/commit-status-updater@v1.1.0
-        with:
-          status: "failure"
-          description: "Add <ready-for-review> label to run flows"
-          name: "Label Missing"
   lint:
     name: ESLint
     needs: label
-    if: contains(github.event.pull_request.labels.*.name, 'ready-for-review')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
